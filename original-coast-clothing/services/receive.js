@@ -14,6 +14,7 @@ const Curation = require("./curation"),
   Order = require("./order"),
   Response = require("./response"),
   Care = require("./care"),
+  UCL = require("./ucl"),
   Survey = require("./survey"),
   GraphAPi = require("./graph-api"),
   i18n = require("../i18n.config");
@@ -92,7 +93,10 @@ module.exports = class Receive {
     } else if (message.includes(i18n.__("care.help").toLowerCase())) {
       let care = new Care(this.user, this.webhookEvent);
       response = care.handlePayload("CARE_HELP");
-    } else {
+    } else if(message.includes(i18n.__("ucl.timetable").toLowerCase())){
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE");
+    }else {
       response = [
         Response.genText(
           i18n.__("fallback.any", {
