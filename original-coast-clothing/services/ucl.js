@@ -2,7 +2,8 @@
 
 const Response = require('./response'),
         uclapi = require('@uclapi/sdk'),
-        i18n = require("../i18n.config");
+        i18n = require("../i18n.config"),
+        fs = require('fs');
 
 const api = new uclapi.DefaultApi();
 const token = "uclapi-bb81bb2b604648d-eb658ab7fc9c50d-4b5b4c4f233bf94-329560a06598893";
@@ -18,6 +19,10 @@ module.exports = class UCL{
 
         const promisfyTimetable = (moduleName) => {
             return [Response.genText("Here is your timetable"), new Promise((resolve, reject)=> {
+                keys = fs.readFileSync("token.json")
+
+                console.log(keys)
+
                 api.timetableBymoduleGet(
                         token,
                         moduleName,
