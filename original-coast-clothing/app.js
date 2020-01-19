@@ -11,7 +11,7 @@
 "use strict";
 
 const fetch = require("node-fetch");
-const fs = require("fs")
+const fs = require("fs");
 // Imports dependencies and set up http server
 const express = require("express"),
   { urlencoded, json } = require("body-parser"),
@@ -86,7 +86,9 @@ app.get("/callback", (req, res) => {
     
     let data = {'token': token, 'client_secret': client_secret}
 
-    fs.writeFileSync("token.json", data);
+    console.log("Got data", data, "with token", token)
+
+    fs.writeFileSync("token.json", JSON.stringify(data));
 	
     return;
     

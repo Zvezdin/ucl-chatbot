@@ -103,7 +103,31 @@ module.exports = class Receive {
     } else if(message.includes(i18n.__("ucl.timetable").toLowerCase())){
       let ucl = new UCL(this.user, this.webhookEvent);
       response = ucl.handlePayload("UCL_TIMETABLE");
-    }else {
+    } else if(message.includes("now")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_NOW");
+    } else if(message.includes("monday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_MONDAY");
+    } else if(message.includes("tuesday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_TUESDAY");
+    } else if(message.includes("wednesday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_WEDNESDAY");
+    } else if(message.includes("thursday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_THURSDAY");
+    } else if(message.includes("friday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_FRIDAY");
+    } else if(message.includes("saturday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_SATURDAY");
+    } else if(message.includes("sunday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_SUNDAY");
+    } else {
       response = [
         Response.genText(
           i18n.__("fallback.any", {
@@ -183,6 +207,7 @@ module.exports = class Receive {
   handlePayload(payload) {
     //console.log("Received Payload:", `${payload} for ${this.user.psid}`);
 
+    
     // Log CTA event in FBA
     GraphAPi.callFBAEventsAPI(this.user.psid, payload);
 
@@ -195,12 +220,13 @@ module.exports = class Receive {
       payload === "GITHUB"
     ) {
       response = Response.genNuxMessage(this.user);
-    } else if (payload.includes("TIMETABLE") || payload.includes("ROOM")) {
-      let curation = new Curation(this.user, this.webhookEvent);
-      response = curation.handlePayload(payload);
     } else if(payload.includes("UCL")) {
       let ucl = new UCL(this.user, this.webhookEvent);
       response = ucl.handlePayload(payload);
+    
+    } else if (payload.includes("TIMETABLE") || payload.includes("ROOM")) {
+      let curation = new Curation(this.user, this.webhookEvent);
+      response = curation.handlePayload(payload);
     } else if (payload.includes("CSAT")) {
       response = Survey.handlePayload(payload);
     } else if (payload.includes("CHAT-PLUGIN")) {
