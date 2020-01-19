@@ -22,10 +22,11 @@ module.exports = class UCL{
                         token,
                         moduleName,
                         (error, data, response) => {
+                            console.log('Response: ', response.body);
                             if(error){
-                                reject()
+                                reject();
                             }else{
-                                resolve(Response.genText(Object.keys(response.body.timetable).join('\n')))
+                                resolve(Response.genText(Object.keys(response.body.timetable).join('\n')));
                             }
                         }
                 )
