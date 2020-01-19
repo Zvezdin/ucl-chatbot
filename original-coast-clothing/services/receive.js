@@ -193,7 +193,10 @@ module.exports = class Receive {
     } else if (payload.includes("CARE")) {
       let care = new Care(this.user, this.webhookEvent);
       response = care.handlePayload(payload);
-    } else if (payload.includes("ORDER")) {
+    } else if(payload.includes("UCL")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload(payload);
+    }else if (payload.includes("ORDER")) {
       response = Order.handlePayload(payload);
     } else if (payload.includes("CSAT")) {
       response = Survey.handlePayload(payload);

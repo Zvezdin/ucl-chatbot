@@ -58,7 +58,11 @@
     "help": "Help"
   },
   "ucl": {
-    "timetable": "Timetable"
+    "timetable": "Timetable",
+    "modules": {
+      "stat0007": "STAT0007",
+      "comp0002": "COMP0002"
+    }
   },
   "survey": {
     "prompt": "Hi, want to get quick feedback on your recent experience with {{agentFirstName}}",
