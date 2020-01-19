@@ -19,21 +19,51 @@ module.exports = class UCL{
 
         const promisfyTimetable = (moduleName) => {
             return [Response.genText("Here is your timetable"), new Promise((resolve, reject)=> {
-                keys = fs.readFileSync("token.json")
+                    let keys = JSON.parse(fs.readFileSync("token.json"))
 
-                console.log(keys)
+                    console.log(keys)
 
-                api.timetableBymoduleGet(
-                        token,
-                        moduleName,
+                    api.timetablePersonalGet(
+                        keys.token,
+                        keys.client_secret,
                         (error, data, response) => {
                             if(error){
                                 reject()
                             }else{
-                                resolve(Response.genText(Object.keys(response.body.timetable).join('\n')))
+                                var today = new Date();
+                                var dd = String(today.getDate()).padStart(2, '0');
+                                var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+                                var yyyy = today.getFullYear();
+                                
+                                dd = "20"; //TODO: if saturday or sunday, choose monday
+                                
+                                today = yyyy + '-' + mm + '-' + dd;
+                                
+                                let timetable = response.body.timetable;
+
+                                console.log(today);
+                                console.log(timetable[today]);
+                                
+                                let tt = timetable[today];
+                                let start_time;
+                                let end_time;
+                                let session_title;
+                                let reply;
+                                let replies = ""
+
+                                for (var i = 0; i < tt.length; i++) {
+                                    var obj = tt[i];
+                                    start_time = obj["start_time"];
+                                    end_time = obj["end_time"];
+                                    session_title = obj["session_title"];
+                                    reply = start_time + " " + end_time + " - " + session_title;
+                                    replies += reply + '\n';
+                                }
+
+                                resolve(Response.genText( replies ))
                             }
                         }
-                )
+                    )
                 })
             ];
         }

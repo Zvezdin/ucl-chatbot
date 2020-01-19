@@ -185,6 +185,7 @@ module.exports = class Receive {
   handlePayload(payload) {
     //console.log("Received Payload:", `${payload} for ${this.user.psid}`);
 
+    
     // Log CTA event in FBA
     GraphAPi.callFBAEventsAPI(this.user.psid, payload);
 
@@ -197,12 +198,13 @@ module.exports = class Receive {
       payload === "GITHUB"
     ) {
       response = Response.genNuxMessage(this.user);
-    } else if (payload.includes("TIMETABLE") || payload.includes("ROOM")) {
-      let curation = new Curation(this.user, this.webhookEvent);
-      response = curation.handlePayload(payload);
     } else if(payload.includes("UCL")) {
       let ucl = new UCL(this.user, this.webhookEvent);
       response = ucl.handlePayload(payload);
+    
+    } else if (payload.includes("TIMETABLE") || payload.includes("ROOM")) {
+      let curation = new Curation(this.user, this.webhookEvent);
+      response = curation.handlePayload(payload);
     } else if (payload.includes("CSAT")) {
       response = Survey.handlePayload(payload);
     } else if (payload.includes("CHAT-PLUGIN")) {
