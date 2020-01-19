@@ -127,6 +127,8 @@ module.exports = class Receive {
     } else if(message.includes("sunday")) {
       let ucl = new UCL(this.user, this.webhookEvent);
       response = ucl.handlePayload("UCL_TIMETABLE_SUNDAY");
+    } else if (message.includes("email")) {
+      response = [Response.genText("No worries buddy! I've drafted the following email:"), Response.genText("Dear Dr. Earl Barr. Unfortunately due to unavoidable circumstances I will not be able to attend your lecture. Please excuse me for that."), Response.genText("Sending from your email..."), Response.genText("Sent!")]
     } else {
       response = [
         Response.genText(
