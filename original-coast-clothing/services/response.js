@@ -133,6 +133,23 @@ module.exports = class Response {
 
     let guide = this.genText(i18n.__("get_started.guidance"));
 
+    let login = {
+        attachment: {
+            type: "template",
+            payload: {
+                template_type: "button",
+                text: "Please login into your UCL account to gain access to personalized help!",
+                buttons: [{
+                    type: "web_url",
+                    url: "https://uclapi.com/oauth/authorise/?client_id=0088869393375663.7561005819112408&state=1" + "/options",
+                    title: "Login",
+                    webview_height_ratio: "full",
+                    messenger_extensions: false
+                }]
+            }
+        }
+    }
+
     let curation = this.genQuickReply(i18n.__("get_started.help"), [
       {
         title: i18n.__("menu.suggestion"),
@@ -144,6 +161,6 @@ module.exports = class Response {
       }
     ]);
 
-    return [welcome, guide, curation];
+    return [welcome, guide, login, curation];
   }
 };

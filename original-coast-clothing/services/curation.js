@@ -68,22 +68,6 @@ module.exports = class Curation {
 
 	  case "TIMETABLE_ME": //CURATION_OCASION_WORK
         // send request to sign in
-		  response = {
-		      attachment: {
-		          type: "template",
-		          payload: {
-		              template_type: "button",
-		              text: "Please login into UCL account to retrieve persoal timetable.",
-		              buttons: [{
-		                  type: "web_url",
-		                  url: "https://uclapi.com/oauth/authorise/?client_id=0088869393375663.7561005819112408&state=1" + "/options",
-		                  title: "Login",
-		                  webview_height_ratio: "full",
-		                  messenger_extensions: false
-		              }]
-		          }
-		      }
-		  };
         break;
 
       case "CURATION_OTHER_STYLE":
