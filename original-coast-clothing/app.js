@@ -11,6 +11,7 @@
 "use strict";
 
 const fetch = require("node-fetch");
+const fs = require("fs")
 // Imports dependencies and set up http server
 const express = require("express"),
   { urlencoded, json } = require("body-parser"),
@@ -76,13 +77,20 @@ app.get("/callback", (req, res) => {
 	let json2;
 	
 	(async () => {
-		
-	  let response = await fetch("https://uclapi.com/oauth/token?code=" + code + "&client_id=" + client_id + "&client_secret=434624a4cb762676863b874997ffa8be3717ba46f06bf657bbdf52b789299c8f");
+    const client_secret = "434624a4cb762676863b874997ffa8be3717ba46f06bf657bbdf52b789299c8f"
+    
+	  let response = await fetch("https://uclapi.com/oauth/token?code=" + code + "&client_id=" + client_id + "&client_secret=" + client_secret);
 	  let json = await response.json();
 	  let token = json.token;
-	  let access_token = json.access_token;
+    let access_token = json.access_token;
+    
+    let data = {'token': token, 'client_secret': client_secret}
+
+    fs.writeFileSync("token.json", data);
 	
-	  let response2 = await fetch("https://uclapi.com/timetable/personal?token=" + token + "&client_secret=434624a4cb762676863b874997ffa8be3717ba46f06bf657bbdf52b789299c8f");
+    return;
+    
+    let response2 = await fetch("https://uclapi.com/timetable/personal?token=" + token + "&client_secret=434624a4cb762676863b874997ffa8be3717ba46f06bf657bbdf52b789299c8f");
 	  let json2 = await response2.json();
 	  	  
 	  var today = new Date();
