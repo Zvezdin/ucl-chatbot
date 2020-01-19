@@ -4,7 +4,7 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 
-const PORT = process.env.PORT || 1337;
+const PORT = process.env.PORT || 3000;
 
 app.use(bodyParser.json());
 
@@ -38,7 +38,7 @@ app.post('/webhook', (req, res) => {
 app.get('/webhook', (req, res) => {
 
   // Your verify token. Should be a random string.
-  let VERIFY_TOKEN = "123"
+  let VERIFY_TOKEN = "cePsksq4uEWmyCmLro8S"
     
   // Parse the query params
   let mode = req.query['hub.mode'];
