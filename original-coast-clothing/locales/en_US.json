@@ -24,6 +24,16 @@
   },
   "curation": {
     "prompt": "Are you looking for your timetable or timetable of a course?",
+    "roomTimePrompt": "When do you want a room?",
+    "roomTypePrompt": "What type of room are you looking for?",
+    "bookingPrompt": "Create a booking for {{roomname}}?",
+    "lt": "Lecture Theatre",
+    "cr": "Classroom",
+    "ss": "Social Space",
+    "pc1": "Public Cluster",
+    "now": "Now",
+    "hour": "In an hour",
+    "2hours": "In 2 hours",
     "price": "How much are you looking to spend?",
     "me": "My timetable",
     "someone": "Course",
@@ -38,7 +48,9 @@
     "timetable": "My timetable",
     "course": "Course",
     "openlogin": "Open UCL login",
-    "pleaselogin": "Please login into UCL account"
+    "pleaselogin": "Please login into UCL account",
+    "yes": "Yes",
+    "no": "No"
   },
   "order": {
     "prompt": "We'll be happy to help you. Select from the following",

@@ -10,9 +10,7 @@
 "use strict";
 
 const Curation = require("./curation"),
-  Order = require("./order"),
   Response = require("./response"),
-  Care = require("./care"),
   UCL = require("./ucl"),
   Survey = require("./survey"),
   GraphAPi = require("./graph-api"),
@@ -61,7 +59,7 @@ module.exports = class Receive {
           Promise.resolve(response).then(data => {
             this.sendMessage(data, delay * 1000);
           }).catch(err => {
-            console.log("error: ", err)
+            console.log("error from A ", err)
           })
         }else{
           this.sendMessage(response, delay * 1000);
@@ -73,7 +71,7 @@ module.exports = class Receive {
         Promise.resolve(responses).then(data => {
           this.sendMessage(data);
         }).catch(err =>{
-          console.log("error: ", err)
+          console.log("error from B", err)
         })
       } else{
         this.sendMessage(responses);

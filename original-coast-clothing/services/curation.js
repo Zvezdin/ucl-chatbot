@@ -12,8 +12,40 @@
 
 // Imports dependencies
 const Response = require("./response"),
+  uclapi = require('@uclapi/sdk'),
   config = require("./config"),
   i18n = require("../i18n.config");
+
+const api = new uclapi.DefaultApi();
+const token = "uclapi-bb81bb2b604648d-eb658ab7fc9c50d-4b5b4c4f233bf94-329560a06598893";
+
+
+function formatRoomInfo(roomObj){
+  let roomAddress = roomObj.location.address.join('\n');
+  return `${roomObj.roomname} with capacity ${roomObj.capacity}\nThe room is located at:\n${roomAddress}`
+}
+
+const promisfyFreeRooms = (startDateTime, roomType) => {
+  let endDateTime = new Date(startDateTime);
+  endDateTime.setHours(endDateTime.getHours() + 1);
+
+  return [Response.genText("There are a few, the closest to you is the following: "), new Promise((resolve, reject)=> {
+      api.roombookingsFreeroomsGet(
+              token,
+              startDateTime.toISOString(),
+              endDateTime.toISOString(),
+              (error, data, response) => {
+                  console.log('Response: ', formatRoomInfo(response.body.free_rooms.filter(room => room.classification === roomType)[0]));
+                  if(error){
+                      reject()
+                  }else{
+                      resolve(Response.genText(formatRoomInfo(response.body.free_rooms.filter(room => room.classification === roomType)[0])))
+                  }
+              }
+      )
+      })
+  ];
+}
 
 module.exports = class Curation {
   constructor(user, webhookEvent) {
@@ -24,6 +56,7 @@ module.exports = class Curation {
   handlePayload(payload) {
     let response;
     let outfit;
+
 
     switch (payload) {
       case "TIMETABLE":
@@ -40,17 +73,100 @@ module.exports = class Curation {
         break;
 		
        case "ROOM":
-		 response = Response.genQuickReply(i18n.__("curation.prompt"), [
-		  {
-      		title: i18n.__("aa"),
-      		payload: "TIMETABLE_ME"
-    	  },
-    	  {
-      		title: i18n.__("bb"),
-      		payload: "TIMETABLE_COURSE"
-    	  }
-  	    ]);
-  	    break;
+        response = Response.genQuickReply(i18n.__("curation.roomTimePrompt"), [
+        {
+            title: i18n.__("curation.now"),
+            payload: "ROOM_NOW"
+          },
+          {
+            title: i18n.__("curation.hour"),
+            payload: "ROOM_HOUR"
+          },
+          {
+            title: i18n.__("curation.2hours"),
+            payload: "ROOM_2HOURS"
+          }
+          ]);
+          break;
+        
+        case "ROOM_NOW":
+          response = Response.genQuickReply(i18n.__("curation.roomTypePrompt"), [
+            {
+              title: i18n.__("curation.lt"),
+              payload: "ROOM_LT_NOW"
+            },
+            {
+              title: i18n.__("curation.cr"),
+              payload: "ROOM_CR_NOW"
+            },
+            {
+              title: i18n.__("curation.ss"),
+              payload: "ROOM_SS_NOW"
+            },
+            {
+              title: i18n.__("curation.pc1"),
+              payload: "ROOM_PC1_NOW"
+            }
+          ])
+          break;
+
+        case "ROOM_HOUR":
+          response = Response.genQuickReply(i18n.__("curation.roomTypePrompt"), [
+            {
+              title: i18n.__("curation.lt"),
+              payload: "ROOM_LT_HOUR"
+            },
+            {
+              title: i18n.__("curation.cr"),
+              payload: "ROOM_CR_HOUR"
+            },
+            {
+              title: i18n.__("curation.ss"),
+              payload: "ROOM_SS_HOUR"
+            },
+            {
+              title: i18n.__("curation.pc1"),
+              payload: "ROOM_PC1_HOUR"
+            }
+          ])
+          break;
+        
+        case "ROOM_2HOURS":
+          response = Response.genQuickReply(i18n.__("curation.roomTypePrompt"), [
+            {
+              title: i18n.__("curation.lt"),
+              payload: "ROOM_LT_2HOURS"
+            },
+            {
+              title: i18n.__("curation.cr"),
+              payload: "ROOM_CR_2HOURS"
+            },
+            {
+              title: i18n.__("curation.ss"),
+              payload: "ROOM_SS_2HOURS"
+            },
+            {
+              title: i18n.__("curation.pc1"),
+              payload: "ROOM_PC1_2HOURS"
+            }
+          ])
+          break;
+        
+        case "ROOM_LT_NOW":
+        case "ROOM_LT_HOUR":
+        case "ROOM_LT_2HOURS":
+        case "ROOM_CR_NOW":
+        case "ROOM_CR_HOUR":
+        case "ROOM_CR_2HOURS":
+        case "ROOM_SS_NOW":
+        case "ROOM_SS_HOUR":
+        case "ROOM_SS_2HOURS":
+        case "ROOM_PC1_NOW":
+        case "ROOM_PC1_HOUR":
+        case "ROOM_PC1_2HOURS":
+          response = this.genRoomResponse(payload);
+          break;
+
 
 		//       case "TIMETABLE_ME":
 		// response = Response.genQuickReply(i18n.__("curation.pleaselogin"), [
@@ -92,6 +208,27 @@ module.exports = class Curation {
         break;
     }
 
+
+    return response;
+  }
+
+  genRoomResponse(payload){
+    let response;
+    let startDateTime = new Date();
+    let payloadArr = payload.split("_");
+    let roomType  = payloadArr[1];
+    let startTime = payloadArr[2].toLowerCase();
+
+    if(startTime === '2hours'){
+      startDateTime.setHours(startDateTime.getHours() + 2);
+    }
+    
+    if(startTime === 'hour'){
+      startDateTime.setHours(startDateTime.getHours() + 1);
+    }
+
+    response = promisfyFreeRooms(startDateTime, roomType);
+    
     return response;
   }
 

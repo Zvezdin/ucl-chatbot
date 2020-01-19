@@ -38,6 +38,7 @@ module.exports = class UCL{
                         keys.token,
                         keys.client_secret,
                         (error, data, response) => {
+                            console.log('Response: ', response.body);
                             if(error){
                                 console.log("ERROR THIS MESSED UP", error.stack)
                                 reject()
