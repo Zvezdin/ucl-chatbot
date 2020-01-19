@@ -61,7 +61,7 @@ module.exports = class Receive {
           Promise.resolve(response).then(data => {
             this.sendMessage(data, delay * 1000);
           }).catch(err => {
-            console.log("error: ", err.stack)
+            console.log("error: ", err)
           })
         }else{
           this.sendMessage(response, delay * 1000);
@@ -105,7 +105,31 @@ module.exports = class Receive {
     } else if(message.includes(i18n.__("ucl.timetable").toLowerCase())){
       let ucl = new UCL(this.user, this.webhookEvent);
       response = ucl.handlePayload("UCL_TIMETABLE");
-    }else {
+    } else if(message.includes("now")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_NOW");
+    } else if(message.includes("monday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_MONDAY");
+    } else if(message.includes("tuesday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_TUESDAY");
+    } else if(message.includes("wednesday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_WEDNESDAY");
+    } else if(message.includes("thursday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_THURSDAY");
+    } else if(message.includes("friday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_FRIDAY");
+    } else if(message.includes("saturday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_SATURDAY");
+    } else if(message.includes("sunday")) {
+      let ucl = new UCL(this.user, this.webhookEvent);
+      response = ucl.handlePayload("UCL_TIMETABLE_SUNDAY");
+    } else {
       response = [
         Response.genText(
           i18n.__("fallback.any", {
