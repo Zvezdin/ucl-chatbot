@@ -26,148 +26,64 @@ module.exports = class Curation {
     let outfit;
 
     switch (payload) {
-      case "SUMMER_COUPON":
-        response = [
-          Response.genText(
-            i18n.__("leadgen.promo", {
-              userFirstName: this.user.firstName
-            })
-          ),
-          Response.genGenericTemplate(
-            `${config.appUrl}/coupon.png`,
-            i18n.__("leadgen.title"),
-            i18n.__("leadgen.subtitle"),
-            [Response.genPostbackButton(i18n.__("leadgen.apply"), "COUPON_50")]
-          )
-        ];
-        break;
-
-      case "COUPON_50":
-        outfit = `${this.user.gender}-${this.randomOutfit()}`;
-
-        response = [
-          Response.genText(i18n.__("leadgen.coupon")),
-          Response.genGenericTemplate(
-            `${config.appUrl}/styles/${outfit}.jpg`,
-            i18n.__("curation.title"),
-            i18n.__("curation.subtitle"),
-            [
-              Response.genWebUrlButton(
-                i18n.__("curation.shop"),
-                `${config.shopUrl}/products/${outfit}`
-              ),
-              Response.genPostbackButton(
-                i18n.__("curation.show"),
-                "CURATION_OTHER_STYLE"
-              ),
-              Response.genPostbackButton(
-                i18n.__("curation.sales"),
-                "CARE_SALES"
-              )
-            ]
-          )
-        ];
-        break;
-
-      case "CURATION":
+      case "TIMETABLE":
         response = Response.genQuickReply(i18n.__("curation.prompt"), [
           {
-            title: i18n.__("curation.me"),
-            payload: "CURATION_FOR_ME"
+            title: i18n.__("curation.timetable"),
+            payload: "TIMETABLE_ME"
           },
           {
-            title: i18n.__("curation.someone"),
-            payload: "CURATION_SOMEONE_ELSE"
+            title: i18n.__("curation.course"),
+            payload: "TIMETABLE_COURSE"
           }
         ]);
         break;
+		
+       case "ROOM":
+		 response = Response.genQuickReply(i18n.__("curation.prompt"), [
+		  {
+      		title: i18n.__("aa"),
+      		payload: "TIMETABLE_ME"
+    	  },
+    	  {
+      		title: i18n.__("bb"),
+      		payload: "TIMETABLE_COURSE"
+    	  }
+  	    ]);
+  	    break;
 
-      case "CURATION_FOR_ME":
-      case "CURATION_SOMEONE_ELSE":
-        response = Response.genQuickReply(i18n.__("curation.occasion"), [
-          {
-            title: i18n.__("curation.work"),
-            payload: "CURATION_OCASION_WORK"
-          },
-          {
-            title: i18n.__("curation.dinner"),
-            payload: "CURATION_OCASION_DINNER"
-          },
-          {
-            title: i18n.__("curation.party"),
-            payload: "CURATION_OCASION_PARTY"
-          },
-          {
-            title: i18n.__("curation.sales"),
-            payload: "CARE_SALES"
-          }
-        ]);
+		//       case "TIMETABLE_ME":
+		// response = Response.genQuickReply(i18n.__("curation.pleaselogin"), [
+		//           {
+		// 	title: i18n.__("curation.openlogin"),
+		//             payload: "CURATION_TIMETABLE"
+		//   }
+		// 	  	]);
+		// 	  	break;
+	  
+      case "TIMETABLE_COURSE":
+		  //TODO: display course timetable
+        response = Response.genQuickReply(i18n.__("curation.course"));
         break;
 
-      case "CURATION_OCASION_WORK":
-        // Store the user budget preference here
-        response = Response.genQuickReply(i18n.__("curation.price"), [
-          {
-            title: "~ $20",
-            payload: "CURATION_BUDGET_20_WORK"
-          },
-          {
-            title: "~ $30",
-            payload: "CURATION_BUDGET_30_WORK"
-          },
-          {
-            title: "+ $50",
-            payload: "CURATION_BUDGET_50_WORK"
-          }
-        ]);
-        break;
-
-      case "CURATION_OCASION_DINNER":
-        // Store the user budget preference here
-        response = Response.genQuickReply(i18n.__("curation.price"), [
-          {
-            title: "~ $20",
-            payload: "CURATION_BUDGET_20_DINNER"
-          },
-          {
-            title: "~ $30",
-            payload: "CURATION_BUDGET_30_DINNER"
-          },
-          {
-            title: "+ $50",
-            payload: "CURATION_BUDGET_50_DINNER"
-          }
-        ]);
-        break;
-
-      case "CURATION_OCASION_PARTY":
-        // Store the user budget preference here
-        response = Response.genQuickReply(i18n.__("curation.price"), [
-          {
-            title: "~ $20",
-            payload: "CURATION_BUDGET_20_PARTY"
-          },
-          {
-            title: "~ $30",
-            payload: "CURATION_BUDGET_30_PARTY"
-          },
-          {
-            title: "+ $50",
-            payload: "CURATION_BUDGET_50_PARTY"
-          }
-        ]);
-        break;
-
-      case "CURATION_BUDGET_20_WORK":
-      case "CURATION_BUDGET_30_WORK":
-      case "CURATION_BUDGET_50_WORK":
-      case "CURATION_BUDGET_20_DINNER":
-      case "CURATION_BUDGET_30_DINNER":
-      case "CURATION_BUDGET_50_DINNER":
-      case "CURATION_BUDGET_20_PARTY":
-      case "CURATION_BUDGET_30_PARTY":
-      case "CURATION_BUDGET_50_PARTY":
-        response = this.genCurationResponse(payload);
+	  case "TIMETABLE_ME": //CURATION_OCASION_WORK
+        // send request to sign in
+		  response = {
+		      attachment: {
+		          type: "template",
+		          payload: {
+		              template_type: "button",
+		              text: "Please login into UCL account to retrieve persoal timetable.",
+		              buttons: [{
+		                  type: "web_url",
+		                  url: "https://uclapi.com/oauth/authorise/?client_id=0088869393375663.7561005819112408&state=1" + "/options",
+		                  title: "Login",
+		                  webview_height_ratio: "full",
+		                  messenger_extensions: false
+		              }]
+		          }
+		      }
+		  };
         break;
 
       case "CURATION_OTHER_STYLE":
@@ -234,3 +150,25 @@ module.exports = class Curation {
     return occasion[randomIndex];
   }
 };
+
+
+function setRoomPreferences(sender_psid) {
+    let response = {
+        attachment: {
+            type: "template",
+            payload: {
+                template_type: "button",
+                text: "OK, let's set your room preferences so I won't need to ask for them in the future.",
+                buttons: [{
+                    type: "web_url",
+                    url: SERVER_URL + "/options",
+                    title: "Set preferences",
+                    webview_height_ratio: "compact",
+                    messenger_extensions: true
+                }]
+            }
+        }
+    };
+
+    return response;
+}

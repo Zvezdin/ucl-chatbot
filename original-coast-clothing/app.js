@@ -10,6 +10,7 @@
 
 "use strict";
 
+const fetch = require("node-fetch");
 // Imports dependencies and set up http server
 const express = require("express"),
   { urlencoded, json } = require("body-parser"),
@@ -64,6 +65,58 @@ app.get("/webhook", (req, res) => {
       res.sendStatus(403);
     }
   }
+});
+
+app.get("/callback", (req, res) => {
+	
+	let code = req.query["code"];
+	let client_id = req.query["client_id"];
+	
+    res.status(200).send("Please close this window");
+	let json2;
+	
+	(async () => {
+		
+	  let response = await fetch("https://uclapi.com/oauth/token?code=" + code + "&client_id=" + client_id + "&client_secret=434624a4cb762676863b874997ffa8be3717ba46f06bf657bbdf52b789299c8f");
+	  let json = await response.json();
+	  let token = json.token;
+	  let access_token = json.access_token;
+	
+	  let response2 = await fetch("https://uclapi.com/timetable/personal?token=" + token + "&client_secret=434624a4cb762676863b874997ffa8be3717ba46f06bf657bbdf52b789299c8f");
+	  let json2 = await response2.json();
+	  	  
+	  var today = new Date();
+	  var dd = String(today.getDate()).padStart(2, '0');
+	  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
+	  var yyyy = today.getFullYear();
+	  
+	  dd = "20"; //TODO: if saturday or sunday, choose monday
+	  
+	  today = yyyy + '-' + mm + '-' + dd;
+	  
+	  console.log(today);
+	  console.log(json2.timetable[today]);
+	  
+	  let tt = json2.timetable[today];
+	  let start_time;
+	  let end_time;
+	  let session_title;
+	  let reply;
+	  let msg;
+	  
+	  for (var i = 0; i < tt.length; i++) {
+	      var obj = tt[i];
+		  start_time = obj["start_time"];
+		  end_time = obj["end_time"];
+		  session_title = obj["session_title"];
+		  reply = start_time + " " + end_time + " - " + session_title;
+		  console.log(reply);
+		  //msg = Response.genText(reply);
+		  //TODO send response via message
+	  }
+	  
+	})();
+	
 });
 
 // Creates the endpoint for your webhook
@@ -185,20 +238,20 @@ app.get("/profile", (req, res) => {
         Profile.setThread();
         res.write(`<p>Set Messenger Profile of Page ${config.pageId}</p>`);
       }
-      if (mode == "personas" || mode == "all") {
-        Profile.setPersonas();
-        res.write(`<p>Set Personas for ${config.appId}</p>`);
-        res.write(
-          "<p>To persist the personas, add the following variables \
-          to your environment variables:</p>"
-        );
-        res.write("<ul>");
-        res.write(`<li>PERSONA_BILLING = ${config.personaBilling.id}</li>`);
-        res.write(`<li>PERSONA_CARE = ${config.personaCare.id}</li>`);
-        res.write(`<li>PERSONA_ORDER = ${config.personaOrder.id}</li>`);
-        res.write(`<li>PERSONA_SALES = ${config.personaSales.id}</li>`);
-        res.write("</ul>");
-      }
+      // if (mode == "personas" || mode == "all") {
+//         Profile.setPersonas();
+//         res.write(`<p>Set Personas for ${config.appId}</p>`);
+//         res.write(
+//           "<p>To persist the personas, add the following variables \
+//           to your environment variables:</p>"
+//         );
+//         res.write("<ul>");
+//         res.write(`<li>PERSONA_BILLING = ${config.personaBilling.id}</li>`);
+//         res.write(`<li>PERSONA_CARE = ${config.personaCare.id}</li>`);
+//         res.write(`<li>PERSONA_ORDER = ${config.personaOrder.id}</li>`);
+//         res.write(`<li>PERSONA_SALES = ${config.personaSales.id}</li>`);
+//         res.write("</ul>");
+//       }
       if (mode == "nlp" || mode == "all") {
         GraphAPi.callNLPConfigsAPI();
         res.write(`<p>Enable Built-in NLP for Page ${config.pageId}</p>`);
@@ -255,8 +308,7 @@ var listener = app.listen(config.port, function() {
   ) {
     console.log(
       "Is this the first time running?\n" +
-        "Make sure to set the both the Messenger profile, persona " +
-        "and webhook by visiting:\n" +
+        "Make sure to set the Messenger profile and webhook by visiting:\n" +
         config.appUrl +
         "/profile?mode=all&verify_token=" +
         config.verifyToken

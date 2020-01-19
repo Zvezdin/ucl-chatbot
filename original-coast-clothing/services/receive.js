@@ -7,7 +7,6 @@
  * Messenger For Original Coast Clothing
  * https://developers.facebook.com/docs/messenger-platform/getting-started/sample-apps/original-coast-clothing
  */
-
 "use strict";
 
 const Curation = require("./curation"),
@@ -35,7 +34,6 @@ module.exports = class Receive {
     try {
       if (event.message) {
         let message = event.message;
-
         if (message.quick_reply) {
           responses = this.handleQuickReply();
         } else if (message.attachments) {
@@ -59,7 +57,7 @@ module.exports = class Receive {
     if (Array.isArray(responses)) {
       let delay = 0;
       for (let response of responses) {
-        this.sendMessage(response, delay * 2000);
+        this.sendMessage(response, delay * 1000);
         delay++;
       }
     } else {
@@ -86,13 +84,8 @@ module.exports = class Receive {
       message.includes("start over")
     ) {
       response = Response.genNuxMessage(this.user);
-    } else if (Number(message)) {
-      response = Order.handlePayload("ORDER_NUMBER");
     } else if (message.includes("#")) {
       response = Survey.handlePayload("CSAT_SUGGESTION");
-    } else if (message.includes(i18n.__("care.help").toLowerCase())) {
-      let care = new Care(this.user, this.webhookEvent);
-      response = care.handlePayload("CARE_HELP");
     } else if(message.includes(i18n.__("ucl.timetable").toLowerCase())){
       let ucl = new UCL(this.user, this.webhookEvent);
       response = ucl.handlePayload("UCL_TIMETABLE");
@@ -107,11 +100,11 @@ module.exports = class Receive {
         Response.genQuickReply(i18n.__("get_started.help"), [
           {
             title: i18n.__("menu.suggestion"),
-            payload: "CURATION"
+            payload: "TIMETABLE"
           },
           {
             title: i18n.__("menu.help"),
-            payload: "CARE_HELP"
+            payload: "ROOM"
           }
         ])
       ];
@@ -129,10 +122,6 @@ module.exports = class Receive {
     console.log("Received attachment:", `${attachment} for ${this.user.psid}`);
 
     response = Response.genQuickReply(i18n.__("fallback.attachment"), [
-      {
-        title: i18n.__("menu.help"),
-        payload: "CARE_HELP"
-      },
       {
         title: i18n.__("menu.start_over"),
         payload: "GET_STARTED"
@@ -171,6 +160,11 @@ module.exports = class Receive {
 
     return this.handlePayload(payload);
   }
+  
+  // handleCallback(code, client_id) {
+// 	  let response;
+// 	  response = Survey.handlePayload("TIMETABLE_CALLBACK");
+//   }
 
   handlePayload(payload) {
     console.log("Received Payload:", `${payload} for ${this.user.psid}`);
@@ -187,14 +181,9 @@ module.exports = class Receive {
       payload === "GITHUB"
     ) {
       response = Response.genNuxMessage(this.user);
-    } else if (payload.includes("CURATION") || payload.includes("COUPON")) {
+    } else if (payload.includes("TIMETABLE") || payload.includes("ROOM")) {
       let curation = new Curation(this.user, this.webhookEvent);
       response = curation.handlePayload(payload);
-    } else if (payload.includes("CARE")) {
-      let care = new Care(this.user, this.webhookEvent);
-      response = care.handlePayload(payload);
-    } else if (payload.includes("ORDER")) {
-      response = Order.handlePayload(payload);
     } else if (payload.includes("CSAT")) {
       response = Survey.handlePayload(payload);
     } else if (payload.includes("CHAT-PLUGIN")) {
@@ -233,11 +222,11 @@ module.exports = class Receive {
     let response = Response.genQuickReply(welcomeMessage, [
       {
         title: i18n.__("menu.suggestion"),
-        payload: "CURATION"
+        payload: "TIMETABLE"
       },
       {
         title: i18n.__("menu.help"),
-        payload: "CARE_HELP"
+        payload: "ROOM"
       }
     ]);
 
