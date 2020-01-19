@@ -7,17 +7,6 @@ const Response = require('./response'),
 const api = new uclapi.DefaultApi();
 const token = "uclapi-bb81bb2b604648d-eb658ab7fc9c50d-4b5b4c4f233bf94-329560a06598893";
 
-const timeTableToString = function(timeTable){
-    console.log("data: ", timeTable.body.timeTable);
-    let scheduleFormatted;
-
-    for(let date in timeTable.body.timetable.keys()){
-        scheduleFormatted += `${date}\n`;
-    }
-
-    return "Test";
-}
-
 module.exports = class UCL{
     constructor(user, webhookEvent){
         this.user = user;
@@ -27,13 +16,23 @@ module.exports = class UCL{
     handlePayload(payload){
         let response;
 
-        const callback = function(error, data, response) {
-            if (error) {
-                console.error('error: ', error);
-            } else {
-                response = Response.genText(timeTableToString(data));
-            }
-        };
+        const promisfyTimetable = (moduleName) => {
+            return [Response.genText("Here is your timetable"), new Promise((resolve, reject)=> {
+                api.timetableBymoduleGet(
+                        token,
+                        moduleName,
+                        (error, data, response) => {
+                            if(error){
+                                reject()
+                            }else{
+                                resolve(Response.genText(Object.keys(response.body.timetable).join('\n')))
+                            }
+                        }
+                )
+                })
+            ];
+        }
+
 
         switch(payload){
             case "UCL_TIMETABLE":
@@ -47,25 +46,17 @@ module.exports = class UCL{
                         title: i18n.__("ucl.modules.comp0002"),
                         payload: "UCL_TIMETABLE_COMP0002"
                     }
-                ]);
-                //response = Response.genText("Here is the timetable for the user!")
+                ])
                 break;
-            case "UCL_TIMETABLE_STAT0007":
-                api.timetableBymoduleGet(
-                    token,
-                    "STAT0007",
-                    callback
-                )       
-                
-                break;
-            case "UCL_TIMETABLE_COMP0002":
-                api.timetableBymoduleGet(
-                    token,
-                    "COMP0002",
-                    callback
-                );  
 
+            case "UCL_TIMETABLE_STAT0007":
+                response = promisfyTimetable("STAT0007")
                 break;
+
+            case "UCL_TIMETABLE_COMP0002":
+                response = promisfyTimetable("COMP0002")
+                break;
+
         }
 
         return response;

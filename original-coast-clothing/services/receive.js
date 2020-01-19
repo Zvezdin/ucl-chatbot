@@ -49,7 +49,7 @@ module.exports = class Receive {
         responses = this.handleReferral();
       }
     } catch (error) {
-      console.error(error);
+      //console.error(error);
       responses = {
         text: `An error has occured: '${error}'. We have been notified and \
         will fix the issue shortly!`
@@ -59,20 +59,36 @@ module.exports = class Receive {
     if (Array.isArray(responses)) {
       let delay = 0;
       for (let response of responses) {
-        this.sendMessage(response, delay * 2000);
+        if(typeof response.then == 'function'){
+          Promise.resolve(response).then(data => {
+            this.sendMessage(data, delay * 2000);
+          }).catch(err => {
+            console.log("error: ", err.stack)
+          })
+        }else{
+          this.sendMessage(response, delay * 2000);
+        }
         delay++;
       }
     } else {
-      this.sendMessage(responses);
+      if(typeof responses.then == 'function'){
+        Promise.resolve(responses).then(data => {
+          this.sendMessage(data);
+        }).catch(err =>{
+          console.log("error: ", err)
+        })
+      } else{
+        this.sendMessage(responses);
+      }
     }
   }
 
   // Handles messages events with text
   handleTextMessage() {
-    console.log(
+    /*console.log(
       "Received text:",
       `${this.webhookEvent.message.text} for ${this.user.psid}`
-    );
+    );*/
 
     // check greeting is here and is confident
     let greeting = this.firstEntity(this.webhookEvent.message.nlp, "greetings");
@@ -126,7 +142,7 @@ module.exports = class Receive {
 
     // Get the attachment
     let attachment = this.webhookEvent.message.attachments[0];
-    console.log("Received attachment:", `${attachment} for ${this.user.psid}`);
+    //console.log("Received attachment:", `${attachment} for ${this.user.psid}`);
 
     response = Response.genQuickReply(i18n.__("fallback.attachment"), [
       {
@@ -173,7 +189,7 @@ module.exports = class Receive {
   }
 
   handlePayload(payload) {
-    console.log("Received Payload:", `${payload} for ${this.user.psid}`);
+    //console.log("Received Payload:", `${payload} for ${this.user.psid}`);
 
     // Log CTA event in FBA
     GraphAPi.callFBAEventsAPI(this.user.psid, payload);
