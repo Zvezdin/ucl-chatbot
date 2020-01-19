@@ -14,10 +14,10 @@
 const Response = require("./response"),
   uclapi = require('@uclapi/sdk'),
   config = require("./config"),
+  fs = require('fs'),
   i18n = require("../i18n.config");
 
 const api = new uclapi.DefaultApi();
-const token = "uclapi-bb81bb2b604648d-eb658ab7fc9c50d-4b5b4c4f233bf94-329560a06598893";
 
 function formatRoomInfo(roomObj){
   let roomAddress = roomObj.location.address.join('\n');
@@ -25,12 +25,13 @@ function formatRoomInfo(roomObj){
 }
 
 const promisfyFreeRooms = (startDateTime, roomType) => {
+  let keys = JSON.parse(fs.readFileSync("token.json"))
   let endDateTime = new Date(startDateTime);
   endDateTime.setHours(endDateTime.getHours() + 1);
 
   return [Response.genText("There are a few, the closest to you is the following: "), new Promise((resolve, reject)=> {
       api.roombookingsFreeroomsGet(
-              token,
+              keys.token,
               startDateTime.toISOString(),
               endDateTime.toISOString(),
               (error, data, response) => {
@@ -42,7 +43,13 @@ const promisfyFreeRooms = (startDateTime, roomType) => {
                   }
               }
       )
-      })
+      }),
+    Response.genQuickReply(i18n.__("curation.bookingPrompt"),[
+      {
+        title: i18n.__("curation.yes"),
+        payload: ""
+      }
+    ])
   ];
 }
 
@@ -235,11 +242,11 @@ module.exports = class Curation {
     let startTime = payloadArr[2].toLowerCase();
 
     if(startTime === '2hours'){
-      startDateTime.setHours(startDateTime2Hours.getHours() + 2);
+      startDateTime.setHours(startDateTime.getHours() + 2);
     }
     
     if(startTime === 'hour'){
-      startDateTime.setHours(startDateTimeHour.getHours() + 1);
+      startDateTime.setHours(startDateTime.getHours() + 1);
     }
 
     response = promisfyFreeRooms(startDateTime, roomType)
