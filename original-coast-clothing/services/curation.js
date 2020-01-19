@@ -17,7 +17,7 @@ const Response = require("./response"),
   i18n = require("../i18n.config");
 
 const api = new uclapi.DefaultApi();
-const token = "uclapi-bb81bb2b604648d-eb658ab7fc9c50d-4b5b4c4f233bf94-329560a06598893";
+const token = undefined; //TODO: Add your token
 
 
 function formatRoomInfo(roomObj){
