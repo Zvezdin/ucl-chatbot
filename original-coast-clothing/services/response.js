@@ -153,7 +153,7 @@ module.exports = class Response {
     let curation = this.genQuickReply(i18n.__("get_started.help"), [
       {
         title: i18n.__("menu.suggestion"),
-        payload: "TIMETABLE"
+        payload: "UCL_TIMETABLE_NOW"
       },
       {
         title: i18n.__("menu.help"),

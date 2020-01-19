@@ -104,7 +104,7 @@ module.exports = class Receive {
       response = Survey.handlePayload("CSAT_SUGGESTION");
     } else if(message.includes(i18n.__("ucl.timetable").toLowerCase())){
       let ucl = new UCL(this.user, this.webhookEvent);
-      response = ucl.handlePayload("UCL_TIMETABLE");
+      response = ucl.handlePayload("UCL_TIMETABLE_NOW");
     } else if(message.includes("now")) {
       let ucl = new UCL(this.user, this.webhookEvent);
       response = ucl.handlePayload("UCL_TIMETABLE_NOW");

@@ -55,7 +55,7 @@ module.exports = class UCL{
                                 let session_title;
                                 let reply;
                                 let replies = "";
-                                let dateStr = ""+date;
+                                let dateStr = date.toDateString();
 
                                 if (typeof tt != "undefined") {
                                     replies += "Here's what you have going for you on " + dateStr + "\n";
@@ -81,20 +81,6 @@ module.exports = class UCL{
 
 
         switch(payload){
-            case "UCL_TIMETABLE":
-                // Ask for user's input 
-                response = Response.genQuickReply("For which module?", [
-                    {
-                        title: i18n.__("ucl.modules.stat0007"),
-                        payload: "UCL_TIMETABLE_STAT0007"
-                    },
-                    {
-                        title: i18n.__("ucl.modules.comp0002"),
-                        payload: "UCL_TIMETABLE_COMP0002"
-                    }
-                ])
-                break;
-
             case "UCL_TIMETABLE_NOW":
                 response = promisfyTimetable(new Date())
                 break;
